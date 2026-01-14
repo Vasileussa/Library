@@ -1,65 +1,158 @@
 ---
-layout: none
 ---
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>我的云书库</title>
+    <title>图书馆</title>
     <style>
-        * { box-sizing: border-box; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body { 
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-            max-width: 900px; 
-            margin: 20px auto; 
-            padding: 0 20px; 
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
+            padding: 20px;
         }
-        .container { background: white; border-radius: 12px; padding: 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); }
-        h1 { text-align: center; color: #333; margin-bottom: 30px; }
-        .book-list { list-style: none; padding: 0; margin: 0; }
-        .book-item { 
-            background: #f8f9fa; 
-            margin-bottom: 12px; 
-            padding: 18px 20px; 
-            border-radius: 8px; 
-            transition: all 0.3s;
-            border-left: 4px solid #667eea;
+        .container { 
+            max-width: 900px; 
+            margin: 0 auto; 
+            background: white; 
+            border-radius: 12px; 
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
         }
-        .book-item:hover { transform: translateX(5px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
-        .book-item a { 
-            text-decoration: none; 
+        h1 { 
+            text-align: center; 
             color: #333; 
-            font-size: 16px; 
-            font-weight: 500;
+            margin-bottom: 10px;
+            font-size: 2.5em;
         }
-        .book-item a:hover { color: #667eea; }
-        .empty { text-align: center; color: #999; padding: 40px; }
-        .tip { font-size: 13px; color: #666; text-align: center; margin-top: 30px; }
+        .subtitle { 
+            text-align: center; 
+            color: #666; 
+            margin-bottom: 40px;
+            font-size: 0.9em;
+        }
+        .book-list { list-style: none; }
+        .book-item { 
+            background: #f8f9fa;
+            margin-bottom: 12px;
+            padding: 18px 24px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            transition: all 0.3s ease;
+        }
+        .book-item:hover { 
+            transform: translateX(8px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+        .book-title {
+            color: #333;
+            font-size: 16px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+        .icon { font-size: 24px; }
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .btn {
+            padding: 8px 16px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #5568d3;
+        }
+        .btn-secondary {
+            background: #e9ecef;
+            color: #495057;
+        }
+        .btn-secondary:hover {
+            background: #dee2e6;
+        }
+        .count { 
+            text-align: center;
+            margin-top: 30px;
+            color: #999;
+            font-size: 14px;
+        }
+        .empty {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+        .empty-icon { font-size: 64px; margin-bottom: 20px; }
+        
+        /* 添加提示标签 */
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            background: #d4edda;
+            color: #155724;
+            margin-left: 8px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>📚 我的云端书架</h1>
-        <ul class="book-list">
-            {% assign pdf_count = 0 %}
-            {% for file in site.static_files %}
-                {% if file.extname == ".pdf" %}
-                    {% assign pdf_count = pdf_count | plus: 1 %}
-                    <li class="book-item">
-                        <a href="{{ file.path | relative_url }}" target="_blank">
-                            📄 {{ file.basename }}
+        <h1>📚 Vasileus の Library</h1>
+        <p class="subtitle">个人数字图书收藏馆 <span class="badge">支持在线阅读</span></p>
+        
+        {% assign pdf_files = site.static_files | where: "extname", ".pdf" %}
+        
+        {% if pdf_files.size > 0 %}
+            <ul class="book-list">
+                {% for file in pdf_files %}
+                <li class="book-item">
+                    <div class="book-title">
+                        <span class="icon">📖</span>
+                        <span>{{ file.basename }}</span>
+                    </div>
+                    <div class="button-group">
+                        <!-- 在线阅读按钮 -->
+                        <a href="https://mozilla.github.io/pdf.js/web/viewer.html?file={{ file.path | absolute_url | url_encode }}" 
+                           target="_blank" 
+                           class="btn btn-primary">
+                            👁️ 在线阅读
                         </a>
-                    </li>
-                {% endif %}
-            {% endfor %}
-            {% if pdf_count == 0 %}
-                <p class="empty">📭 书架还是空的，快去上传你的第一本书吧！</p>
-            {% endif %}
-        </ul>
-        <p class="tip">💡 提示：点击书名即可在线阅读 · 共收藏 {{ pdf_count }} 本图书</p>
+                        <!-- 下载按钮 -->
+                        <a href="{{ file.path | relative_url }}" 
+                           download="{{ file.basename }}" 
+                           class="btn btn-secondary">
+                            ⬇️ 下载
+                        </a>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+            <div class="count">
+                📊 共收藏 <strong>{{ pdf_files.size }}</strong> 本图书
+            </div>
+        {% else %}
+            <div class="empty">
+                <div class="empty-icon">📭</div>
+                <p>书架空空如也</p>
+                <p style="font-size: 12px; margin-top: 10px;">上传 PDF 文件到仓库即可自动显示</p>
+            </div>
+        {% endif %}
     </div>
 </body>
 </html>
